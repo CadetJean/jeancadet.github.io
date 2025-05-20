@@ -12,9 +12,9 @@ PROFESSIONAL EXPERIENCE
 ### Eco Car Electrical System – FIU Lead Electrical Engineer|   Oct 2024 – Present
 #### •	Led the electrical team of 7 to design an energy-efficient car prototype, integrating low-voltage control circuitry, rotating electrical motors, and PCB-based regulation systems.
 #### •	Conducted signal-level testing, performance validation, and DAQ setup using
-oscilloscopes
+####    oscilloscopes
 #### •	Coordinated with cross-functional team on test reports, fault diagnostics, and wiring
-schematics.
+####    schematics.
 #### •	Oversee all electrical-related decision-making and implementations.
 #### •	Conduct rigorous testing to ensure optimal performance and safety.
 ## 6-Axis Robotic Hand Project	|Designer & Developer |		June 2024- Dec 2024
