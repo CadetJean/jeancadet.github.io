@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jean Cadet — Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0a0f1e;
+    --surface2: #0f1628;
+    --accent: #00d4ff;
+    --accent2: #ff4d00;
+    --accent3: #7fff00;
+    --text: #e8edf5;
+    --muted: #6b7a9a;
+    --border: rgba(0,212,255,0.15);
+    --glow: 0 0 30px rgba(0,212,255,0.3);
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Exo 2', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+
+  /* STARFIELD CANVAS */
+  #starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(5,8,16,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: var(--glow);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--accent); text-shadow: var(--glow); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* STATUS PILL */
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--accent3);
+    border: 1px solid rgba(127,255,0,0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    background: rgba(127,255,0,0.05);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse-green 1.5s infinite;
+  }
+
+  @keyframes pulse-green {
+    0%,100% { opacity: 1; box-shadow: 0 0 4px var(--accent3); }
+    50% { opacity: 0.4; box-shadow: none; }
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    padding: 0 3rem;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    max-width: 900px;
+    animation: heroIn 1.2s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes heroIn {
+    from { opacity: 0; transform: translateY(60px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeIn 0.8s 0.3s forwards;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  .hero-name {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 12vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite, heroIn 1s 0.1s both;
+  }
+
+  @keyframes shimmer {
+    to { background-position: 200% center; }
+  }
+
+  .hero-tagline {
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeIn 0.8s 0.6s forwards;
+  }
+
+  .hero-tagline span {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeIn 0.8s 0.9s forwards;
+  }
+
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+    text-transform: uppercase;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1.2rem;
+    opacity: 0;
+    animation: fadeIn 0.8s 1.1s forwards;
+  }
+
+  .btn-primary {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    font-weight: 700;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.3s;
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    box-shadow: var(--glow);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    cursor: none;
+    text-decoration: none;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.3s;
+  }
+
+  .btn-outline:hover {
+    background: rgba(0,212,255,0.1);
+    box-shadow: var(--glow);
+    transform: translateY(-2px);
+  }
+
+  /* ROCKET ANIMATION */
+  .rocket-container {
+    position: absolute;
+    right: 5%;
+    bottom: 0;
+    width: 320px;
+    height: 500px;
+    animation: rocketFloat 3s ease-in-out infinite;
+    z-index: 2;
+  }
+
+  @keyframes rocketFloat {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+  }
+
+  .rocket-svg { width: 100%; height: 100%; }
+
+  /* EXHAUST PARTICLES */
+  .exhaust {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    border-radius: 2px;
+    animation: exhaust 0.8s ease-out infinite;
+    transform-origin: top center;
+  }
+
+  @keyframes exhaust {
+    0% { opacity: 1; transform: translateY(0) scaleY(1); height: 20px; }
+    100% { opacity: 0; transform: translateY(80px) scaleY(3); height: 4px; }
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1s 2s forwards;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%,100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.3; }
+  }
+
+  .scroll-text {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    writing-mode: vertical-rl;
+    text-transform: uppercase;
+  }
+
+  /* SECTION COMMON */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 8rem 3rem;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::before {
+    content: '//';
+    color: var(--muted);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  /* STATS STRIP */
+  .stats-strip {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-item {
+    padding: 1.5rem 2rem;
+    border-right: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-item:hover { background: rgba(0,212,255,0.04); }
+
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+
+  .stat-item:hover::before { transform: scaleX(1); }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    display: block;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .about-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #9db0c8;
+    margin-bottom: 1.4rem;
+  }
+
+  .about-text p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .about-highlight {
+    border-left: 2px solid var(--accent);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text);
+    font-style: italic;
+  }
+
+  /* SKILLS PANEL */
+  .skills-panel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skills-panel::before {
+    content: 'TECH_STACK.conf';
+    position: absolute;
+    top: -1px;
+    right: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    background: var(--bg);
+    padding: 0 0.5rem;
+  }
+
+  .skill-group {
+    margin-bottom: 1.8rem;
+  }
+
+  .skill-group:last-child { margin-bottom: 0; }
+
+  .skill-group-label {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: 0.35rem 0.8rem;
+    background: rgba(0,212,255,0.07);
+    border: 1px solid rgba(0,212,255,0.2);
+    color: var(--accent);
+    letter-spacing: 1px;
+    transition: all 0.25s;
+    cursor: none;
+  }
+
+  .skill-tag:hover {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+    transform: translateY(-2px);
+  }
+
+  /* ROCKET DATA SECTION */
+  .rocket-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rocket-section-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .rocket-specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+
+  .rocket-diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rocket-diagram::before {
+    content: 'OPENROCKET_SIM.ork';
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  /* Inline rocket SVG drawing */
+  .rocket-drawing {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .sim-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .sim-table th {
+    color: var(--accent);
+    letter-spacing: 2px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .sim-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(0,212,255,0.06);
+    color: var(--text);
+  }
+
+  .sim-table tr:hover td { background: rgba(0,212,255,0.04); }
+
+  .sim-table .active-row td { color: var(--accent); }
+
+  .spec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(0,212,255,0.08);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .spec-key { color: var(--muted); letter-spacing: 1px; }
+  .spec-val { color: var(--accent); font-weight: 700; }
+
+  .rocket-highlight-box {
+    background: rgba(255,77,0,0.08);
+    border: 1px solid rgba(255,77,0,0.3);
+    border-radius: 2px;
+    padding: 1.2rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .rocket-highlight-box .label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .rocket-highlight-box .value {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--accent2);
+    letter-spacing: 3px;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    max-width: 1300px;
+    margin: 4rem auto 0;
+    background: var(--border);
+  }
+
+  .project-card {
+    background: var(--bg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+    cursor: none;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .project-card:hover::before { height: 100%; }
+  .project-card:hover { background: var(--surface2); }
+
+  .project-card.featured {
+    grid-column: span 2;
+    background: var(--surface);
+  }
+
+  .project-card.featured::before { background: var(--accent2); }
+
+  .project-num {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    color: rgba(0,212,255,0.06);
+    line-height: 1;
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    letter-spacing: 3px;
+  }
+
+  .project-tag {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .project-title {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .project-desc {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .project-metrics {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric {
+    text-align: center;
+  }
+
+  .metric-num {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    display: block;
+  }
+
+  .metric-label {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tech-chip {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    padding: 0.2rem 0.6rem;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.15);
+    color: var(--muted);
+  }
+
+  /* EXPERIENCE TIMELINE */
+  .experience-inner {
+    max-width: 900px;
+    margin: 4rem auto 0;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 3rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -3rem;
+    top: 0.3rem;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 16px var(--accent);
+    transform: translateX(-5.5px);
+  }
+
+  .tl-meta {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .tl-title {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    letter-spacing: 3px;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+
+  .tl-company {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .tl-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .tl-bullets li {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #8a9db8;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .tl-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 8rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .contact-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 8vw, 8rem);
+    letter-spacing: 6px;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--text), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .contact-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin-bottom: 3rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.5rem;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+    background: transparent;
+  }
+
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+    box-shadow: var(--glow);
+    transform: translateY(-3px);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-text {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  /* SCANLINE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9990;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* GLITCH */
+  @keyframes glitch {
+    0%,100% { clip-path: none; transform: none; }
+    20% { clip-path: polygon(0 15%, 100% 15%, 100% 40%, 0 40%); transform: translateX(-3px); }
+    40% { clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%); transform: translateX(3px); }
+    60% { clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%); transform: translateX(-2px); }
+    80% { clip-path: none; transform: none; }
+  }
+
+  .hero-name:hover { animation: shimmer 4s linear infinite, glitch 0.4s step-end; }
+
+  /* NOISE OVERLAY */
+  .noise {
+    position: fixed;
+    top: -200%; left: -200%;
+    width: 500%; height: 500%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.022;
+    pointer-events: none;
+    z-index: 9989;
+    animation: noiseAnim 0.3s steps(1) infinite;
+  }
+
+  @keyframes noiseAnim {
+    0%  { transform: translate(0,0); }
+    10% { transform: translate(-5%, -10%); }
+    20% { transform: translate(-15%, 5%); }
+    30% { transform: translate(7%, -25%); }
+    40% { transform: translate(-5%, 25%); }
+    50% { transform: translate(-15%, 10%); }
+    60% { transform: translate(15%, 0%); }
+    70% { transform: translate(0%, 15%); }
+    80% { transform: translate(3%, 35%); }
+    90% { transform: translate(-10%, 10%); }
+    100%{ transform: translate(0,0); }
+  }
+
+  @media (max-width: 900px) {
+    .about-grid, .rocket-specs-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: span 1; }
+    .stats-strip { grid-template-columns: repeat(3, 1fr); }
+    .hero-name { font-size: 4.5rem; }
+    .rocket-container { display: none; }
+    nav { padding: 1rem 1.5rem; }
+    section { padding: 5rem 1.5rem; }
+    .stats-strip { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="starfield"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">JC</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#rocket">Rocket</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="status-pill">
+    <span class="status-dot"></span>
+    Open to Opportunities
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">// Computer Engineering · FIU · Miami, FL</div>
+    <h1 class="hero-name">JEAN<br>CADET</h1>
+    <p class="hero-tagline">Building systems that <span>fly, think, and scale</span></p>
+    <div class="hero-badges">
+      <span class="badge">Embedded Systems</span>
+      <span class="badge">Rocketry</span>
+      <span class="badge">Machine Learning</span>
+      <span class="badge">Defense & Aerospace</span>
+      <span class="badge">Software Engineering</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#contact" class="btn-outline">Get in Touch</a>
+    </div>
+  </div>
+
+  <!-- ROCKET ILLUSTRATION -->
+  <div class="rocket-container">
+    <svg class="rocket-svg" viewBox="0 0 200 450" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="rocketBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#0a0f1e"/>
+          <stop offset="40%" style="stop-color:#1a2540"/>
+          <stop offset="100%" style="stop-color:#0a0f1e"/>
+        </linearGradient>
+        <linearGradient id="noseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#e8edf5"/>
+          <stop offset="100%" style="stop-color:#6b7a9a"/>
+        </linearGradient>
+        <filter id="glow-r">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="exhaustGlow" cx="50%" cy="0%" r="50%">
+          <stop offset="0%" style="stop-color:#ff8800;stop-opacity:0.9"/>
+          <stop offset="100%" style="stop-color:#ff4400;stop-opacity:0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- EXHAUST GLOW -->
+      <ellipse cx="100" cy="360" rx="25" ry="15" fill="url(#exhaustGlow)" opacity="0.6">
+        <animate attributeName="ry" values="10;20;10" dur="0.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="0.4s" repeatCount="indefinite"/>
+      </ellipse>
+
+      <!-- FINS -->
+      <polygon points="65,310 50,380 80,330" fill="#0f1628" stroke="#00d4ff" stroke-width="0.8" opacity="0.9"/>
+      <polygon points="135,310 150,380 120,330" fill="#0f1628" stroke="#00d4ff" stroke-width="0.8" opacity="0.9"/>
+      <!-- Smaller canards -->
+      <polygon points="72,140 55,175 80,155" fill="#0f1628" stroke="#00d4ff" stroke-width="0.6" opacity="0.7"/>
+      <polygon points="128,140 145,175 120,155" fill="#0f1628" stroke="#00d4ff" stroke-width="0.6" opacity="0.7"/>
+
+      <!-- MAIN BODY -->
+      <rect x="75" y="80" width="50" height="280" rx="3" fill="url(#rocketBody)" stroke="rgba(0,212,255,0.3)" stroke-width="0.8"/>
+
+      <!-- BODY DETAILS - rings -->
+      <rect x="75" y="140" width="50" height="2" fill="rgba(0,212,255,0.4)"/>
+      <rect x="75" y="200" width="50" height="2" fill="rgba(0,212,255,0.3)"/>
+      <rect x="75" y="260" width="50" height="2" fill="rgba(0,212,255,0.2)"/>
+      <rect x="75" y="310" width="50" height="3" fill="rgba(0,212,255,0.5)"/>
+
+      <!-- PAYLOAD SECTION -->
+      <rect x="79" y="80" width="42" height="60" rx="2" fill="#0a1020" stroke="rgba(0,212,255,0.5)" stroke-width="0.8"/>
+      <rect x="83" y="88" width="12" height="8" rx="1" fill="rgba(0,212,255,0.2)" stroke="rgba(0,212,255,0.6)" stroke-width="0.5"/>
+      <rect x="97" y="88" width="12" height="8" rx="1" fill="rgba(0,212,255,0.2)" stroke="rgba(0,212,255,0.6)" stroke-width="0.5"/>
+
+      <!-- NOSE CONE -->
+      <path d="M75,80 Q85,10 100,5 Q115,10 125,80 Z" fill="url(#noseGrad)" stroke="rgba(0,212,255,0.4)" stroke-width="0.8"/>
+      <!-- Nose tip glow -->
+      <circle cx="100" cy="8" r="3" fill="#00d4ff" filter="url(#glow-r)">
+        <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- MOTOR NOZZLE -->
+      <ellipse cx="100" cy="360" rx="15" ry="6" fill="#050810" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
+      <ellipse cx="100" cy="358" rx="10" ry="4" fill="#ff6600" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;1;0.5;0.8;0.7" dur="0.3s" repeatCount="indefinite"/>
+      </ellipse>
+
+      <!-- ACCENT STRIPE -->
+      <rect x="75" y="160" width="3" height="80" fill="#ff4d00" opacity="0.7"/>
+      <rect x="122" y="160" width="3" height="80" fill="#ff4d00" opacity="0.7"/>
+
+      <!-- MOTOR TEXT -->
+      <text x="100" y="240" text-anchor="middle" font-family="Space Mono" font-size="7" fill="rgba(0,212,255,0.6)" letter-spacing="1">HP-H195NT</text>
+
+      <!-- EXHAUST FLAME ANIMATION -->
+      <g>
+        <ellipse cx="100" cy="368" rx="8" ry="18" fill="#ff8800" opacity="0.6">
+          <animate attributeName="ry" values="18;28;15;22;18" dur="0.25s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0.8;0.5;0.7;0.6" dur="0.25s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="100" cy="378" rx="5" ry="12" fill="#ffcc00" opacity="0.5">
+          <animate attributeName="ry" values="12;18;10;14;12" dur="0.2s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+    </svg>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <div class="scroll-text">Scroll Down</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <span class="stat-num" data-target="994">0</span>
+    <div class="stat-label">Apogee (m)</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="243">0</span>
+    <div class="stat-label">Max Velocity (m/s)</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="287">0</span>
+    <div class="stat-label">Max Accel (m/s²)</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="1">0</span>
+    <div class="stat-label">Safety Incidents</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="40">0</span>
+    <div class="stat-label">Devices Managed</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <div class="section-label">Profile</div>
+      <h2 class="section-title">ABOUT<br>ME</h2>
+
+      <p>I'm a <strong>Computer Engineering student at FIU</strong> with a obsession for building things that work — embedded systems, machine learning pipelines, data acquisition workflows, and rockets.</p>
+
+      <div class="about-highlight">
+        "I don't just write code. I make systems that fly at Mach 0.717, log data at 1 kHz, and detect anomalies in financial markets."
+      </div>
+
+      <p>My engineering work spans from <strong>low-level embedded Linux on BeagleBone</strong> to high-level Python ML pipelines. I lead teams, manage multi-subsystem integration, and never accept zero-impact documentation.</p>
+
+      <p>Currently targeting <strong>defense, aerospace, and software engineering roles</strong> where I can apply systems thinking to real hardware problems. Expected graduation: <strong>December 2027</strong>.</p>
+    </div>
+
+    <div class="skills-panel reveal">
+      <div class="skill-group">
+        <div class="skill-group-label">// Languages</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">C++</span>
+          <span class="skill-tag">C#</span>
+          <span class="skill-tag">MATLAB</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">HTML/CSS</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">// Embedded & Systems</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Embedded Linux</span>
+          <span class="skill-tag">BeagleBone</span>
+          <span class="skill-tag">HW-SW Integration</span>
+          <span class="skill-tag">Telemetry</span>
+          <span class="skill-tag">DAQ Workflows</span>
+          <span class="skill-tag">Diagnostics</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">// ML & Data</div>
+        <div class="skill-tags">
+          <span class="skill-tag">scikit-learn</span>
+          <span class="skill-tag">Pandas</span>
+          <span class="skill-tag">NumPy</span>
+          <span class="skill-tag">Matplotlib</span>
+          <span class="skill-tag">Isolation Forest</span>
+          <span class="skill-tag">yfinance</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">// Tools & Platforms</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">Simulink</span>
+          <span class="skill-tag">OpenRocket</span>
+          <span class="skill-tag">SolidWorks</span>
+          <span class="skill-tag">AutoCAD</span>
+          <span class="skill-tag">CoppeliaSim</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROCKET SECTION -->
+<section id="rocket" class="rocket-section">
+  <div class="rocket-section-inner">
+    <div class="reveal">
+      <div class="section-label">High-Power Rocketry</div>
+      <h2 class="section-title">THE<br>ROCKET</h2>
+      <p style="color:var(--muted); font-size:0.9rem; font-family:var(--font-mono); margin-top:0.5rem; letter-spacing:1px;">
+        HP-H195NT-10 · OpenRocket Simulation · 3 Flights Simulated
+      </p>
+    </div>
+
+    <div class="rocket-specs-grid">
+      <!-- ROCKET DIAGRAM -->
+      <div class="rocket-diagram reveal">
+        <div style="font-family:var(--font-mono); font-size:0.62rem; letter-spacing:3px; color:var(--accent); text-transform:uppercase; margin-bottom:1rem;">Side Profile — 1.52 cal Stability</div>
+
+        <!-- SVG rocket side view -->
+        <svg class="rocket-drawing" viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#1a2540"/>
+              <stop offset="100%" style="stop-color:#0a0f1e"/>
+            </linearGradient>
+          </defs>
+          <!-- SCALE BAR -->
+          <line x1="30" y1="105" x2="230" y2="105" stroke="rgba(0,212,255,0.3)" stroke-width="0.5"/>
+          <line x1="30" y1="100" x2="30" y2="110" stroke="rgba(0,212,255,0.5)" stroke-width="1"/>
+          <line x1="130" y1="100" x2="130" y2="110" stroke="rgba(0,212,255,0.5)" stroke-width="1"/>
+          <line x1="230" y1="100" x2="230" y2="110" stroke="rgba(0,212,255,0.5)" stroke-width="1"/>
+          <text x="80" y="118" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#6b7a9a">80 cm</text>
+          <text x="180" y="118" text-anchor="middle" font-family="Space Mono" font-size="6" fill="#6b7a9a">80 cm</text>
+
+          <!-- NOSE CONE -->
+          <path d="M30,55 Q50,30 80,28 Q80,82 80,82 Q50,80 30,55 Z" fill="#c8d4e8" stroke="rgba(0,212,255,0.4)" stroke-width="0.8"/>
+
+          <!-- PAYLOAD SECTION -->
+          <rect x="80" y="28" width="70" height="54" fill="#0d1525" stroke="rgba(0,212,255,0.5)" stroke-width="0.8"/>
+          <!-- windows -->
+          <rect x="88" y="36" width="18" height="12" rx="2" fill="rgba(0,212,255,0.15)" stroke="rgba(0,212,255,0.6)" stroke-width="0.5"/>
+          <rect x="112" y="36" width="18" height="12" rx="2" fill="rgba(0,212,255,0.15)" stroke="rgba(0,212,255,0.6)" stroke-width="0.5"/>
+
+          <!-- MAIN BODY -->
+          <rect x="150" y="28" width="220" height="54" fill="url(#bodyGrad)" stroke="rgba(0,212,255,0.3)" stroke-width="0.8"/>
+          <!-- stripes -->
+          <rect x="150" y="28" width="220" height="4" fill="rgba(255,77,0,0.5)"/>
+          <rect x="150" y="78" width="220" height="4" fill="rgba(255,77,0,0.5)"/>
+          <!-- rings -->
+          <line x1="220" y1="28" x2="220" y2="82" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+          <line x1="290" y1="28" x2="290" y2="82" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
+          <line x1="360" y1="28" x2="360" y2="82" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
+
+          <!-- CG DOT -->
+          <circle cx="256" cy="55" r="6" fill="none" stroke="#4488ff" stroke-width="1.5"/>
+          <circle cx="256" cy="55" r="2" fill="#4488ff"/>
+          <text x="256" y="22" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#4488ff">CG 95.6cm</text>
+
+          <!-- CP DOT -->
+          <circle cx="310" cy="55" r="6" fill="none" stroke="#ff4444" stroke-width="1.5"/>
+          <circle cx="310" cy="55" r="2" fill="#ff4444"/>
+          <text x="310" y="22" text-anchor="middle" font-family="Space Mono" font-size="6.5" fill="#ff4444">CP 103cm</text>
+
+          <!-- MOTOR SECTION -->
+          <rect x="370" y="32" width="80" height="46" fill="#141e30" stroke="rgba(0,212,255,0.5)" stroke-width="1"/>
+          <text x="410" y="57" text-anchor="middle" font-family="Space Mono" font-size="7" fill="rgba(0,212,255,0.7)">H195NT</text>
+
+          <!-- FINS -->
+          <polygon points="370,82 345,100 370,82" fill="none" stroke="rgba(0,212,255,0.6)" stroke-width="1.2"/>
+          <polygon points="450,82 450,100 430,82" fill="none" stroke="rgba(0,212,255,0.6)" stroke-width="1.2"/>
+
+          <!-- BOAT TAIL / NOZZLE -->
+          <path d="M450,32 L480,36 L480,74 L450,78 Z" fill="#0a0f1e" stroke="rgba(0,212,255,0.5)" stroke-width="0.8"/>
+          <rect x="480" y="40" width="20" height="30" fill="#050810" stroke="rgba(0,212,255,0.4)" stroke-width="0.8"/>
+
+          <!-- EXHAUST -->
+          <ellipse cx="510" cy="55" rx="12" ry="8" fill="rgba(255,140,0,0.3)">
+            <animate attributeName="rx" values="10;16;8;14;10" dur="0.3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.4;0.7;0.3;0.6;0.4" dur="0.3s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="525" cy="55" rx="8" ry="5" fill="rgba(255,200,0,0.4)">
+            <animate attributeName="rx" values="8;14;6;10;8" dur="0.25s" repeatCount="indefinite"/>
+          </ellipse>
+
+          <!-- LENGTH LABEL -->
+          <line x1="30" y1="90" x2="500" y2="90" stroke="rgba(0,212,255,0.2)" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <text x="265" y="97" text-anchor="middle" font-family="Space Mono" font-size="6" fill="rgba(0,212,255,0.5)">161 cm</text>
+        </svg>
+
+        <!-- SIM TABLE -->
+        <table class="sim-table">
+          <thead>
+            <tr>
+              <th>Simulation</th>
+              <th>Apogee</th>
+              <th>Max Vel</th>
+              <th>Max Accel</th>
+              <th>Flight Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="active-row">
+              <td>Simulation 2 ✓</td>
+              <td>994 m</td>
+              <td>243 m/s</td>
+              <td>287 m/s²</td>
+              <td>115 s</td>
+            </tr>
+            <tr>
+              <td>Sim 1200s</td>
+              <td>996 m</td>
+              <td>270 m/s</td>
+              <td>330 m/s²</td>
+              <td>123 s</td>
+            </tr>
+            <tr>
+              <td>Simulation 3</td>
+              <td>994 m</td>
+              <td>243 m/s</td>
+              <td>287 m/s²</td>
+              <td>115 s</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ROCKET SPECS -->
+      <div class="reveal">
+        <div style="font-family:var(--font-mono); font-size:0.62rem; letter-spacing:3px; color:var(--accent2); text-transform:uppercase; margin-bottom:1.5rem;">// Physical Specs</div>
+        <div class="spec-list">
+          <div class="spec-row"><span class="spec-key">Motor Config</span><span class="spec-val">HP-H195NT-10</span></div>
+          <div class="spec-row"><span class="spec-key">Total Length</span><span class="spec-val">161 cm</span></div>
+          <div class="spec-row"><span class="spec-key">Max Diameter</span><span class="spec-val">5 cm</span></div>
+          <div class="spec-row"><span class="spec-key">Mass (no motor)</span><span class="spec-val">669 g</span></div>
+          <div class="spec-row"><span class="spec-key">Mass (with motor)</span><span class="spec-val">866 g</span></div>
+          <div class="spec-row"><span class="spec-key">CG Location</span><span class="spec-val">95.6 cm</span></div>
+          <div class="spec-row"><span class="spec-key">CP Location</span><span class="spec-val">103 cm</span></div>
+          <div class="spec-row"><span class="spec-key">Stability</span><span class="spec-val">1.52 cal / 4.73%</span></div>
+          <div class="spec-row"><span class="spec-key">Velocity off rod</span><span class="spec-val">23.8 m/s</span></div>
+          <div class="spec-row"><span class="spec-key">Optimum delay</span><span class="spec-val">10.9 s</span></div>
+          <div class="spec-row"><span class="spec-key">Ground hit vel.</span><span class="spec-val">4.19 m/s</span></div>
+        </div>
+
+        <div class="rocket-highlight-box">
+          <div class="label">// Peak Performance</div>
+          <div class="value">MACH 0.717</div>
+          <div style="font-family:var(--font-mono); font-size:0.65rem; color:var(--muted); margin-top:0.3rem; letter-spacing:1px;">243 m/s · 287 m/s² peak acceleration</div>
+        </div>
+
+        <div style="margin-top:2rem; padding:1.2rem; border:1px solid var(--border); background:rgba(0,212,255,0.03);">
+          <div style="font-family:var(--font-mono); font-size:0.6rem; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:0.8rem;">// Simulation Software</div>
+          <div style="font-size:0.88rem; color:#9db0c8; line-height:1.6;">
+            Designed and simulated in <strong style="color:var(--text)">OpenRocket</strong>. Three simulation runs validated consistent 994 m apogee performance. Stability margin of 1.52 calibers ensures safe, predictable flight envelope.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div style="max-width:1300px; margin:0 auto;">
+    <div class="reveal">
+      <div class="section-label">Selected Work</div>
+      <h2 class="section-title">PROJECTS</h2>
+    </div>
+
+    <div class="projects-grid reveal">
+      <!-- FEATURED: EcoCar -->
+      <div class="project-card featured">
+        <div class="project-num">01</div>
+        <div class="project-tag">// Embedded · Ongoing</div>
+        <div class="project-title">ECO<br>ENGINEERING<br>ECOCAR</div>
+        <p class="project-desc">Lead embedded and systems coordination for a student engineering team. Managing cross-functional subsystem integration, technical reviews, and project execution from embedded firmware to validation tooling.</p>
+        <div class="project-metrics">
+          <div class="metric">
+            <span class="metric-num">30%</span>
+            <span class="metric-label">Faster test iteration</span>
+          </div>
+          <div class="metric">
+            <span class="metric-num">40%</span>
+            <span class="metric-label">Less duplicate debug</span>
+          </div>
+          <div class="metric">
+            <span class="metric-num">1kHz</span>
+            <span class="metric-label">DAQ logging rate</span>
+          </div>
+        </div>
+        <div class="project-tech">
+          <span class="tech-chip">Embedded Systems</span>
+          <span class="tech-chip">MATLAB/Simulink</span>
+          <span class="tech-chip">DAQ</span>
+          <span class="tech-chip">Git</span>
+          <span class="tech-chip">Telemetry</span>
+          <span class="tech-chip">Embedded Linux</span>
+        </div>
+      </div>
+
+      <!-- Stock Anomaly -->
+      <div class="project-card">
+        <div class="project-num">02</div>
+        <div class="project-tag">// ML · 2025</div>
+        <div class="project-title">STOCK<br>ANOMALY<br>DETECTOR</div>
+        <p class="project-desc">Built an Isolation Forest ML workflow to detect abnormal stock behavior and volatility shifts in financial time-series data. Automated ingestion and preprocessing cut manual analysis time by 80%+.</p>
+        <div class="project-metrics">
+          <div class="metric">
+            <span class="metric-num">80%+</span>
+            <span class="metric-label">Time saved</span>
+          </div>
+        </div>
+        <div class="project-tech">
+          <span class="tech-chip">Python</span>
+          <span class="tech-chip">scikit-learn</span>
+          <span class="tech-chip">Pandas</span>
+          <span class="tech-chip">Matplotlib</span>
+          <span class="tech-chip">yfinance</span>
+        </div>
+      </div>
+
+      <!-- Rocket -->
+      <div class="project-card">
+        <div class="project-num">03</div>
+        <div class="project-tag">// Aerospace · Rocketry</div>
+        <div class="project-title">HIGH-POWER<br>ROCKET<br>DESIGN</div>
+        <p class="project-desc">Designed and simulated a high-power rocket using OpenRocket. Three simulation runs achieving 994 m apogee at Mach 0.717. HP-H195NT-10 motor configuration with 1.52 cal stability margin.</p>
+        <div class="project-metrics">
+          <div class="metric">
+            <span class="metric-num">994m</span>
+            <span class="metric-label">Apogee</span>
+          </div>
+        </div>
+        <div class="project-tech">
+          <span class="tech-chip">OpenRocket</span>
+          <span class="tech-chip">SolidWorks</span>
+          <span class="tech-chip">Simulation</span>
+          <span class="tech-chip">Aerodynamics</span>
+        </div>
+      </div>
+
+      <!-- Lab Ops -->
+      <div class="project-card">
+        <div class="project-num">04</div>
+        <div class="project-tag">// Systems · Lab Ops</div>
+        <div class="project-title">LAB<br>OPERATIONS<br>SYSTEM</div>
+        <p class="project-desc">Designed a scheduling and coordination system for 40+ devices across FIU engineering lab. 18% downtime reduction. Zero safety incidents across 25+ students per semester.</p>
+        <div class="project-metrics">
+          <div class="metric">
+            <span class="metric-num">18%</span>
+            <span class="metric-label">Less downtime</span>
+          </div>
+        </div>
+        <div class="project-tech">
+          <span class="tech-chip">Git</span>
+          <span class="tech-chip">Documentation</span>
+          <span class="tech-chip">Systems Design</span>
+          <span class="tech-chip">BeagleBone</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="experience-inner">
+    <div class="reveal">
+      <div class="section-label">Track Record</div>
+      <h2 class="section-title">EXPERIENCE</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="tl-meta">May 2024 — Present</div>
+        <div class="tl-title">STUDENT INTERN</div>
+        <div class="tl-company">// Florida International University · Miami, FL</div>
+        <ul class="tl-bullets">
+          <li>Supervise engineering club production for 25+ students per semester — zero safety incidents maintained.</li>
+          <li>Coordinate scheduling across 40+ devices, reducing downtime by ~18% and improving lab availability.</li>
+          <li>Maintain version-controlled project documentation in Git and support diagnostics across embedded engineering projects.</li>
+          <li>Support cross-functional hardware-software coordination on live embedded Linux platforms.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="tl-meta">Jan 2023 — Jun 2024</div>
+        <div class="tl-title">FRONT DESK OPS</div>
+        <div class="tl-company">// Hampton Inn & Suites · Miami, FL</div>
+        <ul class="tl-bullets">
+          <li>Created a ticketing SOP that slashed average response time from ~6 hours to under 2 hours for a 90-room property.</li>
+          <li>Onboarded 12 new hires with quick-start guides that cut ramp-up time by ~1 week.</li>
+          <li>Coordinated resource allocation during peak events to maintain operational continuity under pressure.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="tl-meta">In Progress — Dec 2027</div>
+        <div class="tl-title">B.S. COMPUTER ENGINEERING</div>
+        <div class="tl-company">// Florida International University · Miami, FL</div>
+        <ul class="tl-bullets">
+          <li>Relevant coursework: Software Design, Data Structures, Operating Systems, Systems Engineering, Control Systems.</li>
+          <li>Active in high-power rocketry, EcoCar embedded team, and engineering lab operations.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="contact-eyebrow">// Let's Build Something</div>
+  <h2 class="contact-title">MAKE<br>CONTACT</h2>
+  <p class="contact-sub">Open to defense, aerospace, and software engineering opportunities. Let's talk about building systems that matter.</p>
+  <div class="contact-links">
+    <a href="mailto:cadetjeanrony5@gmail.com" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      cadetjeanrony5@gmail.com
+    </a>
+    <a href="tel:7863809021" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v3z"/></svg>
+      (786) 380-9021
+    </a>
+    <a href="#" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      LinkedIn
+    </a>
+    <a href="#" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      GitHub
+    </a>
+  </div>
+  <a href="mailto:cadetjeanrony5@gmail.com" class="btn-primary" style="font-size:0.85rem; padding:1.1rem 3rem;">
+    LAUNCH MESSAGE →
+  </a>
+</section>
+
+<footer>
+  <div class="footer-text">© 2025 Jean Cadet · Miami, FL</div>
+  <div class="footer-text">Computer Engineering · FIU · Expected Dec 2027</div>
+  <div class="footer-text" id="clock">--:--:-- UTC</div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(2)';
+      cursorRing.style.transform = 'translate(-50%, -50%) scale(1.5)';
+      cursorRing.style.opacity = '1';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+      cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+      cursorRing.style.opacity = '0.5';
+    });
+  });
+
+  // STARFIELD
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let W, H;
+
+  function initStars() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    stars = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2,
+        o: Math.random(),
+        s: Math.random() * 0.3 + 0.05,
+        twinkle: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.twinkle += 0.02;
+      const alpha = s.o * (0.5 + 0.5 * Math.sin(s.twinkle));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 220, 255, ${alpha})`;
+      ctx.fill();
+      s.y -= s.s;
+      if (s.y < 0) { s.y = H; s.x = Math.random() * W; }
+    });
+    requestAnimationFrame(drawStars);
+  }
+
+  window.addEventListener('resize', initStars);
+  initStars();
+  drawStars();
+
+  // SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal, .timeline-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // COUNT UP ANIMATION
+  function countUp(el, target, duration = 2000) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) {
+        el.textContent = target === 1 ? '0' : target;
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(start);
+      }
+    }, 16);
+  }
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('[data-target]').forEach(el => {
+          countUp(el, parseInt(el.dataset.target));
+        });
+        statsObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  statsObserver.observe(document.querySelector('.stats-strip'));
+
+  // CLOCK
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getUTCHours()).padStart(2,'0');
+    const m = String(now.getUTCMinutes()).padStart(2,'0');
+    const s = String(now.getUTCSeconds()).padStart(2,'0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s} UTC`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // PARALLAX ROCKET
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const rocket = document.querySelector('.rocket-container');
+    if (rocket) {
+      rocket.style.transform = `translateY(${scrollY * 0.3}px)`;
+    }
+  });
+</script>
+</body>
+</html>
